@@ -54,7 +54,7 @@ class Struct(metaclass=OnlyCTypeFieldsPermitted):
         This works because, according to the source for dataclasses.py in the standard library, __annotations__ "is
         guaranteed to be ordered" (thanks to the new dict implementation in Python 3.6)."""
         prefix = cls.__type_width__.value or cls.__byte_order__.value
-        return prefix + ''.join(t.format_string for t in cls.__annotations__.values())
+        return prefix + ''.join(t.format_string(cls.__type_width__) for t in cls.__annotations__.values())
 
     @classproperty
     def sizeof(cls) -> int:

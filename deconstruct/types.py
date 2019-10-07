@@ -10,7 +10,8 @@
  Todo: add support for stdint.
 """
 from typing import Any, List
-from .meta import ArrayLengthSpecifiable, classproperty
+from .meta import ArrayLengthSpecifiable
+from .struct import TypeWidth
 
 
 class CType(metaclass=ArrayLengthSpecifiable):
@@ -28,11 +29,14 @@ class CType(metaclass=ArrayLengthSpecifiable):
     """
     type_code: str
     length: int = 1
+    native_only: bool = False
 
-    @classproperty
-    def format_string(cls) -> str:
-        """Forms a struct.py-compliant format string comprising of the length and type code."""
+    @classmethod
+    def format_string(cls, type_width: TypeWidth) -> str:
+        """Form a struct.py-compliant format string comprising of the length and type code."""
         assert cls.type_code
+        if cls.native_only and type_width is not TypeWidth.NATIVE:
+            raise TypeError(f"'{cls.__name__}' can only be used in Structs using '{TypeWidth.NATIVE}'")
         return f'{cls.length}{cls.type_code}'
 
     @classmethod
@@ -66,9 +70,11 @@ class ulonglong(longlong): type_code = 'Q'
 
 class double(float, CType): type_code = 'd'
 
-class ssize_t(int, CType): type_code = 'n'
+class ssize_t(int, CType): type_code = 'n'; native_only = True
 
-class size_t(int, CType): type_code = 'N'
+class size_t(int, CType): type_code = 'N'; native_only = True
+
+class ptr(int, CType): type_code = 'P'; native_only = True
 
 class ptr(int): type_code = 'P'
 

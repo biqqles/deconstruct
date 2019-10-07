@@ -34,7 +34,7 @@ class OnlyCTypeFieldsPermitted(type):
     """Metaclass: once applied to a class, only permits fields of types which are defined in this module."""
     def __new__(mcs, name, bases, dict_):
         if bases:  # if class being created subclasses something - i.e. ignore base class
-            from types import CType
+            from .types import CType
             for field_type in dict_['__annotations__'].values():
                 if not issubclass(field_type, CType):
                     raise TypeError('Only types defined in this package can be used in Structs')
