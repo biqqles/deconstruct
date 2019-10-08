@@ -71,18 +71,23 @@ Subclass this to define your own structs. Subclasses should only contain field d
 When you instantiate your Struct with a `bytes` object, deconstruct creates a format string and uses it to unpack that buffer. In the instance, deconstruct types will be replaced with their equivalent Python types for use (e.g. `bytes` for `char`, `int` for `schar` and `float` for `double`).
 
 #### Attributes
-|Name            |Type       |Description  |
-|----------------|-----------|-------------|
+|Name            |Type       |Description   |
+|----------------|-----------|--------------|
 |`__byte_order__`|`ByteOrder`|Set this in your subclass definition to define the byte order used when unpacking the struct. One of:<ul><li>`ByteOrder.NATIVE` (default value)</li><li>`ByteOrder.BIG_ENDIAN`</li><li>`ByteOrder.LITTLE_ENDIAN`</li></ul>|
 |`__type_width__`|`TypeWidth`|Set this in your subclass definition to define the type width and padding used for the struct. One of:<ul><li>`TypeWidth.NATIVE` (default value)</li><li>`TypeWidth.STANDARD`</li></ul>When `TypeWidth.NATIVE` is set, the struct will use native type widths and alignment. When `TypeWidth.STANDARD` is used, the struct will use Python's struct's "standard" widths<sup>[1](#f_st)</sup> and no padding.|
 
 Note that `TypeWidth.NATIVE` can only be used with `ByteOrder.NATIVE`. This is a limitation of Python's struct.
 
 #### Properties
-|Name           |Type  |Description |  
-|----------------|------|-------------|  
-|`format_string` |`str` |The struct.py-compatible format string for this struct |
-|`sizeof`        |`int` |The total size in bytes of the struct. Equivalent to C's `sizeof` |
+|Name            |Type       |Description   |  
+|----------------|-----------|--------------|  
+|`format_string` |`str`      |The struct.py-compatible format string for this struct |
+|`sizeof`        |`int`      |The total size in bytes of the struct. Equivalent to C's `sizeof` |
+
+#### Methods
+|Signature       |Return type|Description   |  
+|----------------|-----------|--------------|  
+|`to_bytes()`    |`bytes`    |Returns the in-memory (packed) representation of this struct instance|
 
 ### C types
 deconstruct defines the following special types for use in Struct field definitions:<sup>[2](#f_ty)</sup>
@@ -92,8 +97,8 @@ deconstruct defines the following special types for use in Struct field definiti
 |`char`          |`char*`             |`c`                    |1                       |
 |`schar`         |`char`              |`b`                    |1                       |
 |`uchar`         |`unsigned char`     |`B`                    |1                       |
-|`short`         |`char`              |`h`                    |2                       |
-|`ushort`        |`unsigned char`     |`H`                    |2                       |
+|`short`         |`short`             |`h`                    |2                       |
+|`ushort`        |`unsigned short`    |`H`                    |2                       |
 |`int`           |`int`               |`i`                    |2                       |
 |`uint`          |`unsigned int`      |`I`                    |2                       |
 |`long`          |`long`              |`l`                    |4                       |
@@ -109,7 +114,7 @@ deconstruct defines the following special types for use in Struct field definiti
 
 <sup>\* only available with `__type_width__ = TypeWidth.NATIVE`.</sup>
 
-As mentioned earlier, these types support a `type[length]` syntax to define fixed-size arrays. When a Struct is used to unpack a buffer, these types will resolve to a Python list of their equivalent types. You can also use these to define padding sequences.
+As mentioned earlier, these types support a `type[length]` syntax to define fixed-size arrays. When a Struct is used to unpack a buffer, these types will resolve to a Python tuple of their equivalent types. You can also use these to define padding sequences.
 
 ---
 

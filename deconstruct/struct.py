@@ -7,6 +7,7 @@
 """
 import struct
 from enum import Enum
+from itertools import chain
 from typing import Any, List
 from .meta import OnlyCTypeFieldsPermitted, classproperty
 
@@ -46,7 +47,13 @@ class Struct(metaclass=OnlyCTypeFieldsPermitted):
                 field_value = tuple(unpacked.pop(0) for i in range(field_type.length))
             else:
                 field_value = unpacked.pop(0)
-            self.__setattr__(field_name, field_type.value_of(field_value))
+            setattr(self, field_name, field_type.value_of(field_value))
+
+    def to_bytes(self) -> bytes:
+        """Return the in-memory (packed) representation of this struct instance."""
+        attr_values = [getattr(self, name) for name in self.__annotations__]
+        flat_values = chain(*(v if isinstance(v, tuple) else [v] for v in attr_values))  # flatten arrays for packing
+        return struct.pack(self.format_string, *flat_values)
 
     @classproperty
     def format_string(cls) -> str:
