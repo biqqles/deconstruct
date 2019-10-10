@@ -11,5 +11,5 @@
 from .struct import Struct, ByteOrder, TypeWidth
 from .types import \
     char, schar, uchar, bool, short, ushort, int, uint, long, ulong, longlong, ulonglong, float, double, \
-    size_t, ssize_t, ptr, \
+    size, ssize, ptr, \
     int8, uint8, int16, uint16, int32, uint32, int64, uint64

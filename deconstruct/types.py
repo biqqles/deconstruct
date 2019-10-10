@@ -99,9 +99,9 @@ class uint64(int64): type_code = ulonglong.type_code; native_type_code = ctypes.
 
 # native-only types
 
-class ssize_t(int, CType): type_code = 'n'; native_only = True
+class ssize(int, CType): type_code = 'n'; native_only = True
 
-class size_t(int, CType): type_code = 'N'; native_only = True
+class size(int, CType): type_code = 'N'; native_only = True
 
 class ptr(int, CType): type_code = 'P'; native_only = True
 

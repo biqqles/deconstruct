@@ -119,8 +119,8 @@ deconstruct defines the following special types for use in Struct field definiti
 |`int64`         |`int64_t`           |`q`*                   |8                       |
 |`uint64`        |`uint64_t`          |`Q`*                   |8                       |
 |`ptr`           |`void*`/`intptr_t`/`uintptr_t`|`P`          |N/A**                   |
-|`size_t`        |`size_t`            |`n`                    |N/A**                   |
-|`ssize_t`       |`ssize_t`           |`N`                    |N/A**                   |
+|`size`          |`size_t`            |`n`                    |N/A**                   |
+|`ssize`         |`ssize_t`           |`N`                    |N/A**                   |
 
 <sup>
 * format character with `__type_width__ = TypeWidth.STANDARD` - platform specific otherwise.<br>
