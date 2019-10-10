@@ -25,7 +25,7 @@ class TypeWidth(Enum):
 
 class Struct(metaclass=OnlyCTypeFieldsPermitted):
     __byte_order__: ByteOrder = ByteOrder.NATIVE
-    __type_width__: TypeWidth = TypeWidth.NATIVE
+    __type_width__: TypeWidth = TypeWidth.STANDARD
 
     def __init__(self, buffer: bytes):
         """On instantiation, unpack the provided buffer and replace instance fields with their respective values."""
