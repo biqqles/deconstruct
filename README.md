@@ -8,30 +8,32 @@ In contrast, deconstruct allows structs to be defined and used using a syntax th
 ### Usage  
 With deconstruct, the struct definition (adapted from [input.h](https://github.com/torvalds/linux/blob/master/include/uapi/linux/input.h)):
 
-```C  
+```C
+#include <stdint.h>
+
 struct input_event {  
-    long time[2];
-    short type;
-    short code;
-    int value;
-};  
-```  
+    uint64_t time[2];
+    int16_t type;
+    int16_t code;
+    int32_t value;
+};
+```
 
 can be represented as:
 
 ```Python
-import deconstruct as c  
-  
-class InputEvent(c.Struct):  
-    time: c.long[2]
-    type: c.short
-    code: c.short
-    value: c.int
+import deconstruct as c
+
+class InputEvent(c.Struct):
+    time: c.uint64[2]
+    type: c.int16
+    code: c.int16
+    value: c.int32
 ```
-   
+
 This definition can be used to interpret and then access binary data:
 
-```Python  
+```Python
 >>> buffer = b'Some  arbitrary  buffer!'
 >>> event = InputEvent(buffer)
 >>> event.type
@@ -43,12 +45,12 @@ This definition can be used to interpret and then access binary data:
 >>> event.time[1]
 2340027244253309282
 >>> event.value
-561145190 
-```  
+561145190
+```
 
 Of course, in reality the buffer passed in is more likely to come from something more useful, like a file. Notice that fixed-size arrays can be specified using the syntax `type[length]`, a further improvement on Python's struct.
-  
-### Installation  
+
+### Installation
 deconstruct is currently available as a (tiny) wheel package. [Download](https://github.com/biqqles/deconstruct/releases/download/v0.1/deconstruct-0.1-py3-none-any.whl) and install with the following command:
 
 ```sh
@@ -74,19 +76,19 @@ When you instantiate your Struct with a `bytes` object, deconstruct creates a fo
 |Name            |Type       |Description   |
 |----------------|-----------|--------------|
 |`__byte_order__`|`ByteOrder`|Set this in your subclass definition to define the byte order used when unpacking the struct. One of:<ul><li>`ByteOrder.NATIVE` (default value)</li><li>`ByteOrder.BIG_ENDIAN`</li><li>`ByteOrder.LITTLE_ENDIAN`</li></ul>|
-|`__type_width__`|`TypeWidth`|Set this in your subclass definition to define the type width and padding used for the struct. One of:<ul><li>`TypeWidth.NATIVE` (default value)</li><li>`TypeWidth.STANDARD`</li></ul>When `TypeWidth.NATIVE` is set, the struct will use native type widths and alignment. When `TypeWidth.STANDARD` is used, the struct will use Python's struct's "standard" widths<sup>[1](#f_st)</sup> and no padding.|
+|`__type_width__`|`TypeWidth`|Set this in your subclass definition to define the type width and padding used for the struct. One of:<ul><li>`TypeWidth.NATIVE`</li><li>`TypeWidth.STANDARD` (default value)</li></ul>When `TypeWidth.NATIVE` is set, the struct will use native type widths and alignment. When `TypeWidth.STANDARD` is used, the struct will use Python's struct's "standard" widths<sup>[1](#f_st)</sup> and no padding.|
 
 Note that `TypeWidth.NATIVE` can only be used with `ByteOrder.NATIVE`. This is a limitation of Python's struct.
 
 #### Properties
-|Name            |Type       |Description   |  
-|----------------|-----------|--------------|  
+|Name            |Type       |Description   |
+|----------------|-----------|--------------|
 |`format_string` |`str`      |The struct.py-compatible format string for this struct |
 |`sizeof`        |`int`      |The total size in bytes of the struct. Equivalent to C's `sizeof` |
 
 #### Methods
-|Signature       |Return type|Description   |  
-|----------------|-----------|--------------|  
+|Signature       |Return type|Description   |
+|----------------|-----------|--------------|
 |`to_bytes()`    |`bytes`    |Returns the in-memory (packed) representation of this struct instance|
 
 ### C types
@@ -108,13 +110,24 @@ deconstruct defines the following special types for use in Struct field definiti
 |`bool`          |`bool` (`_Bool`)    |`?`                    |1                       |
 |`float`         |`float`             |`f`                    |4                       |
 |`double`        |`double`            |`d`                    |8                       |
-|`ptr`           |`void*`             |`P`                    |N/A\*                   |
-|`size_t`        |`size_t`            |`n`                    |N/A\*                   |
-|`ssize_t`       |`ssize_t`           |`N`                    |N/A\*                   |
+|`int8`          |`int8_t`            |`b`*                   |1                       |
+|`uint8`         |`uint8_t`           |`B`*                   |1                       |
+|`int16`         |`int16_t`           |`h`*                   |2                       |
+|`uint16`        |`uint16_t`          |`H`*                   |2                       |
+|`int32`         |`int32_t`           |`l`*                   |4                       |
+|`uint32`        |`uint32_t`          |`L`*                   |4                       |
+|`int64`         |`int64_t`           |`q`*                   |8                       |
+|`uint64`        |`uint64_t`          |`Q`*                   |8                       |
+|`ptr`           |`void*`/`intptr_t`/`uintptr_t`|`P`          |N/A**                   |
+|`size_t`        |`size_t`            |`n`                    |N/A**                   |
+|`ssize_t`       |`ssize_t`           |`N`                    |N/A**                   |
 
-<sup>\* only available with `__type_width__ = TypeWidth.NATIVE`.</sup>
+<sup>
+* format character with `__type_width__ = TypeWidth.STANDARD` - platform specific otherwise.<br>
+** only available with `__type_width__ = TypeWidth.NATIVE`.
+</sup>
 
-As mentioned earlier, these types support a `type[length]` syntax to define fixed-size arrays. When a Struct is used to unpack a buffer, these types will resolve to a Python tuple of their equivalent types. You can also use these to define padding sequences.
+As mentioned earlier, these types support a `type[length]` syntax to define fixed-size arrays. When a Struct is used to unpack a buffer, these types will resolve to a Python tuple of their equivalent types. You can also use this to define padding sequences.
 
 ---
 

@@ -5,10 +5,10 @@
  License, v. 2.0. If a copy of the MPL was not distributed with this
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
- This module defines Python analogues of C's data types for use in Structs.
-
- Todo: add support for stdint.
+ This module defines Python types representing C data types, for use
+ in Structs.
 """
+import ctypes
 from typing import Any, List
 from .meta import ArrayLengthSpecifiable
 from .struct import TypeWidth
@@ -23,9 +23,6 @@ class CType(metaclass=ArrayLengthSpecifiable):
 
         * When a class which subclasses Struct is instantiated, these types are replaced by this
           built-in type in the resulting instance. This therefore assists with type hinting.
-
-    Todo: consider backwards compatibility: it would be fairly trivial to backport this library to much earlier Python
-     versions by overriding __new__ and incrementing some counter on each class definition
     """
     type_code: str
     length: int = 1
@@ -43,6 +40,18 @@ class CType(metaclass=ArrayLengthSpecifiable):
     def value_of(cls, unpacked: Any):
         """Subclasses may override this method to define special conversion logic (after unpacking) if required."""
         return unpacked
+
+
+class StdInt(int, CType):
+    """A type representing a fixed-width integer type from <stdint.h>."""
+    native_type_code: str  # determined with ctypes
+
+    @classmethod
+    def format_string(cls, type_width: TypeWidth) -> str:
+        """Form a struct.py-compliant format string comprising of the length and type code."""
+        assert cls.native_type_code
+        super().format_string(type_width)
+        return f'{cls.length}{cls.native_type_code if type_width is TypeWidth.NATIVE else cls.type_code}'
 
 
 class char(bytes, CType):
@@ -70,13 +79,31 @@ class ulonglong(longlong): type_code = 'Q'
 
 class double(float, CType): type_code = 'd'
 
+# exact-width types from stdint
+
+class int8(StdInt): type_code = schar.type_code; native_type_code = ctypes.c_int8._type_
+
+class uint8(int8): type_code = uchar.type_code; native_type_code = ctypes.c_uint8._type_
+
+class int16(StdInt): type_code = short.type_code; native_type_code = ctypes.c_int16._type_
+
+class uint16(int16): type_code = ushort.type_code; native_type_code = ctypes.c_uint16._type_
+
+class int32(StdInt): type_code = long.type_code; native_type_code = ctypes.c_int32._type_
+
+class uint32(int32): type_code = ulong.type_code; native_type_code = ctypes.c_uint32._type_
+
+class int64(StdInt): type_code = longlong.type_code; native_type_code = ctypes.c_int64._type_
+
+class uint64(int64): type_code = ulonglong.type_code; native_type_code = ctypes.c_uint64._type_
+
+# native-only types
+
 class ssize_t(int, CType): type_code = 'n'; native_only = True
 
 class size_t(int, CType): type_code = 'N'; native_only = True
 
 class ptr(int, CType): type_code = 'P'; native_only = True
-
-class ptr(int): type_code = 'P'
 
 # types that shadow built-ins below here
 
