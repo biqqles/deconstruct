@@ -39,14 +39,14 @@ class Struct(metaclass=OnlyCTypeFieldsPermitted):
                                  ' Python\'s struct')
 
         # unpack buffer
-        unpacked: List[Any] = list(struct.unpack(self.format_string, buffer))
+        unpacked: List[Any] = list(reversed(struct.unpack(self.format_string, buffer)))
 
         # and set fields
         for field_name, field_type in self.__annotations__.items():  # type: str, 'CType'
             if field_type.length > 1:
-                field_value = tuple(unpacked.pop(0) for i in range(field_type.length))
+                field_value = tuple(unpacked.pop() for i in range(field_type.length))
             else:
-                field_value = unpacked.pop(0)
+                field_value = unpacked.pop()
             setattr(self, field_name, field_type.value_of(field_value))
 
     def to_bytes(self) -> bytes:
