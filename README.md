@@ -96,8 +96,8 @@ deconstruct defines the following special types for use in Struct field definiti
 
 |deconstruct type|C99 type            |Python format character|"Standard" width (bytes)<sup>[1](#f_st)</sup>|
 |----------------|--------------------|-----------------------|------------------------|
-|`char`          |`char*`             |`c`                    |1                       |
-|`schar`         |`char`              |`b`                    |1                       |
+|`char`          |`char`              |`c`                    |1                       |
+|`schar`         |`signed char`       |`b`                    |1                       |
 |`uchar`         |`unsigned char`     |`B`                    |1                       |
 |`short`         |`short`             |`h`                    |2                       |
 |`ushort`        |`unsigned short`    |`H`                    |2                       |
@@ -127,7 +127,7 @@ deconstruct defines the following special types for use in Struct field definiti
 ** only available with `__type_width__ = TypeWidth.NATIVE`.
 </sup>
 
-As mentioned earlier, these types support a `type[length]` syntax to define fixed-size arrays. When a Struct is used to unpack a buffer, these types will resolve to a Python tuple of their equivalent types. You can also use this to define padding sequences.
+As mentioned earlier, these types support a `type[length]` syntax to define fixed-size, N-D arrays. When a Struct is used to unpack a buffer, these types will resolve to a Python tuple of their equivalent types. You can also use this to define padding sequences.
 
 ---
 

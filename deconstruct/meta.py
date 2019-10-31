@@ -21,13 +21,16 @@ class classproperty:
 
 
 class ArrayLengthSpecifiable(type):
-    """Metaclass: repurposes square-bracket syntax to allow the definition of fixed-size arrays of a type - just like
-    in C! (Though strictly speaking the syntax is more like C#'s.)
-    E.g. char[10].length == 10 -- note that the use of type() here restricts arrays to one dimension."""
+    """Metaclass: repurposes square-bracket syntax to allow the definition of fixed-size N-D arrays of a type - just
+    like in C! (Though strictly speaking the syntax is more like C#'s.)
+    E.g. char[10].length == 10; int[5][5].length == 25."""
+    length: int = 1
+
     def __getitem__(cls, length: int) -> Type:
         if length < 1:
             raise TypeError('Arrays of length < 1 are not permitted')
-        return type(cls.__name__, cls.__bases__, dict(cls.__dict__, length=length))  # a copy of cls with altered length
+        # create a new copy of cls with altered length - the product of antecedents' lengths
+        return type(cls.__name__, cls.__bases__, dict(cls.__dict__, length=(cls.length * length)))
 
 
 class OnlyCTypeFieldsPermitted(type):

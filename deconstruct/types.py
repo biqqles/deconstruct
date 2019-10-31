@@ -25,7 +25,6 @@ class CType(metaclass=ArrayLengthSpecifiable):
           built-in type in the resulting instance. This therefore assists with type hinting.
     """
     type_code: str
-    length: int = 1
     native_only: bool = False
 
     @classmethod
