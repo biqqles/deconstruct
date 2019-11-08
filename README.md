@@ -51,17 +51,13 @@ This definition can be used to interpret and then access binary data:
 Of course, in reality the buffer passed in is more likely to come from something more useful, like a file. Notice that fixed-size arrays can be specified using the syntax `type[length]`, a further improvement on Python's struct.
 
 ### Installation
-deconstruct is currently available as a (tiny) wheel package. [Download](https://github.com/biqqles/deconstruct/releases/download/v0.1/deconstruct-0.1-py3-none-any.whl) and install with the following command:
+Download and install with the following command:
 
 ```sh
-python3 -m pip install deconstruct-0.1-py3-none-any.whl --user
+python3 -m pip install https://github.com/biqqles/deconstruct/archive/master.zip
 ```
 
-Alternatively, simply clone this repository:
-
-```sh
-git clone https://github.com/biqqles/deconstruct.git
-```
+Built wheels are also available under [Releases](https://github.com/biqqles/deconstruct/releases).
 
 deconstruct has no dependencies but requires `Python >= 3.6` as it makes use of the class annotations added in that release (see [PEP 526](https://www.python.org/dev/peps/pep-0526/)).
 
@@ -90,6 +86,8 @@ Note that `TypeWidth.NATIVE` can only be used with `ByteOrder.NATIVE`. This is a
 |Signature       |Return type|Description   |
 |----------------|-----------|--------------|
 |`to_bytes()`    |`bytes`    |Returns the in-memory (packed) representation of this struct instance|
+
+You can also `print` Struct instances for easier debugging.
 
 ### C types
 deconstruct defines the following special types for use in Struct field definitions:<sup>[2](#f_ty)</sup>

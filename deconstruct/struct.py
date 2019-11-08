@@ -49,6 +49,12 @@ class Struct(metaclass=OnlyCTypeFieldsPermitted):
                 field_value = unpacked.pop()
             setattr(self, field_name, field_type.value_of(field_value))
 
+    def __repr__(self) -> str:
+        """Return a textual representation of this struct instance."""
+        return f'struct {type(self).__name__} [{self.__byte_order__}, {self.__type_width__}] {{\n' + \
+            '\n'.join(f'    {n}: {t.__name__} = {getattr(self, n)}' for n, t in self.__annotations__.items()) + \
+            '\n}'
+
     def to_bytes(self) -> bytes:
         """Return the in-memory (packed) representation of this struct instance."""
         attr_values = [getattr(self, name) for name in self.__annotations__]
@@ -57,7 +63,7 @@ class Struct(metaclass=OnlyCTypeFieldsPermitted):
 
     @classproperty
     def format_string(cls) -> str:
-        """A struct.py-compatible format string, calculated from this Struct's definition.
+        """A struct.py-compatible format string, calculated from this struct's definition.
         This works because, according to the source for dataclasses.py in the standard library, __annotations__ "is
         guaranteed to be ordered" (thanks to the new dict implementation in Python 3.6)."""
         prefix = cls.__type_width__.value or cls.__byte_order__.value
