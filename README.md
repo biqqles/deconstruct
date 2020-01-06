@@ -1,7 +1,7 @@
 # deconstruct
-**deconstruct** provides a Pythonic analogue of C's `struct`, primarily for the purpose of interpreting (i.e. _deconstructing_) contiguous binary data.  
+**deconstruct** is a tiny (125 lines of code) package that provides a Pythonic analogue of C's `struct`, primarily for the purpose of interpreting (i.e. _deconstructing_) contiguous binary data.
   
-Internally, deconstruct uses Python's [struct module](https://docs.python.org/3/library/struct.html) and can be considered an abstraction of sorts. struct (the module) can be frustrating to use: its format strings appear arcane and furthermore separate the description of the data from its representation, a definite strength of C's `struct`.
+Internally, deconstruct uses Python's [struct module](https://docs.python.org/3/library/struct.html) and can be considered an abstraction of sorts. struct (the module) can be frustrating to use: its format strings appear arcane and furthermore separate the description of the data from its representation, a definite strength of C's struct.
   
 In contrast, deconstruct allows structs to be defined and used using a syntax that is Pythonic while maintaining close correspondence to C.  
   
@@ -59,7 +59,7 @@ python3 -m pip install https://github.com/biqqles/deconstruct/archive/master.zip
 
 Built wheels are also available under [Releases](https://github.com/biqqles/deconstruct/releases).
 
-deconstruct has no dependencies but requires `Python >= 3.6` as it makes use of the class annotations added in that release (see [PEP 526](https://www.python.org/dev/peps/pep-0526/)).
+deconstruct has no dependencies but requires Python >= 3.6 as it makes use of the class annotations added in that release (see [PEP 526](https://www.python.org/dev/peps/pep-0526/)).
 
 ## API listing
 
@@ -125,7 +125,7 @@ deconstruct defines the following special types for use in Struct field definiti
 ** only available with `__type_width__ = TypeWidth.NATIVE`.
 </sup>
 
-As mentioned earlier, these types support a `type[length]` syntax to define fixed-size, N-D arrays. When a Struct is used to unpack a buffer, these types will resolve to a Python tuple of their equivalent types. You can also use this to define padding sequences.
+As mentioned earlier, these types support a `type[length]` syntax to define fixed-size, n-dimensional arrays. When a Struct is used to unpack a buffer, these types will resolve to a Python tuple of their equivalent types. You can also use this to define padding sequences.
 
 ---
 

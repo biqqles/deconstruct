@@ -8,6 +8,7 @@
  This module contains the meta-programmatic magic that implements this
  package's special behaviour.
 """
+import sys
 from typing import Type
 
 
@@ -36,10 +37,13 @@ class ArrayLengthSpecifiable(type):
 class OnlyCTypeFieldsPermitted(type):
     """Metaclass: once applied to a class, only permits fields of types which are defined in this module."""
     def __new__(mcs, name, bases, dict_):
+        from .types import CType
         if bases:  # if class being created subclasses something - i.e. ignore base class
-            from .types import CType
             if '__annotations__' in dict_:
                 for field_type in dict_['__annotations__'].values():
+                    if type(field_type) is str:  # evaluate string annotations
+                        module_context = sys.modules[dict_['__module__']]
+                        field_type = eval(field_type, dict(**vars(module_context), **dict_))
                     if not issubclass(field_type, CType):
                         raise TypeError('Only types defined in this package can be used in Structs')
         return super().__new__(mcs, name, bases, dict_)
