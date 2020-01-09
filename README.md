@@ -51,13 +51,19 @@ This definition can be used to interpret and then access binary data:
 Of course, in reality the buffer passed in is more likely to come from something more useful, like a file. Notice that fixed-size arrays can be specified using the syntax `type[length]`, a further improvement on Python's struct.
 
 ### Installation
-Download and install with the following command:
+deconstruct is now on PyPI:
 
 ```sh
-python3 -m pip install https://github.com/biqqles/deconstruct/archive/master.zip
+pip install deconstruct
 ```
 
-Built wheels are also available under [Releases](https://github.com/biqqles/deconstruct/releases).
+Alternatively you can install straight from this repository:
+
+```sh
+pip install https://github.com/biqqles/deconstruct/archive/master.zip
+```
+
+Built wheels are also available under [Releases](https://github.com/biqqles/deconstruct/releases), as is a changelog.
 
 deconstruct has no dependencies but requires Python >= 3.6 as it makes use of the class annotations added in that release (see [PEP 526](https://www.python.org/dev/peps/pep-0526/)).
 
