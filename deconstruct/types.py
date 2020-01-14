@@ -9,8 +9,10 @@
  in Structs.
 """
 import ctypes
+from functools import reduce
+from operator import mul
 from typing import Any, List
-from .meta import ArrayLengthSpecifiable
+from .meta import ArrayLengthSpecifiable, classproperty
 from .struct import TypeWidth
 
 
@@ -39,6 +41,11 @@ class CType(metaclass=ArrayLengthSpecifiable):
     def value_of(cls, unpacked: Any):
         """Subclasses may override this method to define special conversion logic (after unpacking) if required."""
         return unpacked
+
+    @classproperty
+    def length(cls):
+        """The total length of this array, calculated by the product of its """
+        return reduce(mul, cls.dimensions, 1)
 
 
 class StdInt(int, CType):

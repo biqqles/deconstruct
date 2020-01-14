@@ -42,8 +42,11 @@ class Struct(metaclass=OnlyCTypeFieldsPermitted):
 
         # and set fields
         for field_name, field_type in self.__annotations__.items():  # type: str, 'CType'
-            if field_type.length > 1:
-                field_value = tuple(islice(unpacked, field_type.length))  # take length items from iterator
+            if field_type.dimensions:
+                array = islice(unpacked, field_type.length)  # take length items from iterator
+                for d in reversed(field_type.dimensions):  # recursively nest array according to schema
+                    array = zip(*([array] * d))
+                field_value = tuple(*array)
             else:
                 field_value = next(unpacked)
             setattr(self, field_name, field_type.value_of(field_value))
