@@ -25,11 +25,11 @@ class ArrayLengthSpecifiable(type):
     """Metaclass: repurposes square-bracket syntax to allow the definition of fixed-size N-D arrays of a type - just
     like in C! (Though strictly speaking the syntax is more like C#'s.)
     E.g. char[10].length == 10; int[5][5].length == 25."""
-    dimensions: List[int] = []  # elements hold length in ascending dimensions
+    dimensions: List[int] = []  # elements hold lengths in ascending dimensions
 
     def __getitem__(cls, length: int) -> Type:
-        if length < 1:
-            raise TypeError('Arrays of length < 1 are not permitted')
+        if length < 0:
+            raise TypeError('Size of array cannot be negative')
         # create a new copy of cls with altered dimensions schema
         return type(cls.__name__, cls.__bases__, dict(cls.__dict__, dimensions=[*cls.dimensions, length]))
 

@@ -44,7 +44,7 @@ class CType(metaclass=ArrayLengthSpecifiable):
 
     @classproperty
     def length(cls):
-        """The total length of this array, calculated by the product of its """
+        """The total length of this array, calculated by the product of its lengths in each dimension."""
         return reduce(mul, cls.dimensions, 1)
 
 
