@@ -1,5 +1,5 @@
 # deconstruct
-**deconstruct** is a tiny (125 lines of code) package that provides a Pythonic analogue of C's `struct`, primarily for the purpose of interpreting (i.e. _deconstructing_) contiguous binary data.
+**deconstruct** provides a Pythonic analogue of C's `struct`, primarily for the purpose of interpreting (i.e. _deconstructing_) contiguous binary data.
   
 Internally, deconstruct uses Python's [struct module](https://docs.python.org/3/library/struct.html) and can be considered an abstraction of sorts. struct (the module) can be frustrating to use: its format strings appear arcane and furthermore separate the description of the data from its representation, a definite strength of C's struct.
   
@@ -36,19 +36,20 @@ This definition can be used to interpret and then access binary data:
 ```Python
 >>> buffer = b'Some  arbitrary  buffer!'
 >>> event = InputEvent(buffer)
->>> event.type
-25120
 >>> event.code
 26229
->>> event.time[0]
-8241904116577431379
->>> event.time[1]
-2340027244253309282
->>> event.value
-561145190
+>>> event.time
+(8241904116577431379, 2340027244253309282)
+>>> print(event)
+struct InputEvent [ByteOrder.NATIVE, TypeWidth.STANDARD] {
+    time: uint64 = (8241904116577431379, 2340027244253309282)
+    type: int16 = 25120
+    code: int16 = 26229
+    value: int32 = 561145190
+}
 ```
 
-Of course, in reality the buffer passed in is more likely to come from something more useful, like a file. Notice that fixed-size arrays can be specified using the syntax `type[length]`, a further improvement on Python's struct.
+Of course, in reality the buffer passed in is more likely to come from something more useful, like a file. Notice that fixed-size, n-dimensional arrays can be specified using the syntax `type[length]`, a further improvement on Python's struct.
 
 ### Installation
 deconstruct is now on PyPI:
@@ -135,6 +136,6 @@ As mentioned earlier, these types support a `type[length]` syntax to define fixe
 
 ---
 
-<b id="f_st">1.</b> Python's struct has the concept of "standard" type sizes. This is somewhat confusing coming from C as its standards go to some length not to define a standard ABI. However, as this terminology is so fundamental to the documentation of Python's struct it is replicated here for simplicity's sake. **These sizes correspond with the *minimum* sizes [implied](https://en.wikipedia.org/wiki/C_data_types#Basic_types) for C's types.**
+<b id="f_st">1.</b> Python's struct has the concept of "standard" type sizes. This is somewhat confusing coming from C as its standards go to some length not to define a standard ABI. However, as this terminology is so fundamental to the documentation of Python's struct it is replicated here for simplicity's sake. These sizes correspond with the *minimum* sizes [implied](https://en.wikipedia.org/wiki/C_data_types#Basic_types) for C's types.	
 
 <b id="f_ty">2.</b> Because some of these conflict with Python's primitives, it is not recommended to `import * from deconstruct` as this will severely pollute your namespace (in fact this is a bad idea in general). I like to `import deconstruct as c` as shown above.

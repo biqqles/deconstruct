@@ -2,10 +2,10 @@ from setuptools import setup
 
 setup(
     name='deconstruct',
-    version='0.3',
+    version='0.4',
     author='biqqles',
     author_email='biqqles@protonmail.com',
-    description='Pythonic C-style structs',
+    description='Pythonic C-style structs for parsing binary data',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     url='https://github.com/biqqles/deconstruct',
