@@ -39,11 +39,12 @@ class OnlyCTypeFieldsPermitted(type):
     def __new__(mcs, name, bases, dict_):
         from .types import CType
         if bases:  # if class being created subclasses something - i.e. ignore base class
-            for field_name, field_type in dict_.get('__annotations__', {}).items():
+            annotations = dict_.setdefault('__annotations__', {})  # ensure class has annotations
+            for field_name, field_type in annotations.items():
                 if type(field_type) is str:  # evaluate string annotations
                     module_vars = vars(sys.modules[dict_['__module__']])
                     field_type = eval(field_type, dict(dict_, **module_vars))
-                    dict_['__annotations__'][field_name] = field_type
+                    annotations[field_name] = field_type
                 if not issubclass(field_type, CType):
                     raise TypeError('Only types defined in this package can be used in Structs')
         return super().__new__(mcs, name, bases, dict_)
