@@ -58,8 +58,9 @@ class Struct(metaclass=OnlyCTypeFieldsPermitted):
             '\n}'
 
     def __eq__(self, other) -> bool:
-        """Compare this struct instance to another."""
-        return isinstance(other, self.__class__) and all(a == b for a, b in zip(vars(self), vars(other)))
+        """Compare this struct instance to another. Comparison returns true only if the structs have the same fields
+        and the same values for those fields."""
+        return isinstance(other, self.__class__) and vars(self) == vars(other)
 
     def to_bytes(self) -> bytes:
         """Return the in-memory (packed) representation of this struct instance."""
