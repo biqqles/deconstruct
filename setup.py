@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='deconstruct',
-    version='0.4',
+    version='0.5',
     author='biqqles',
     author_email='biqqles@protonmail.com',
     description='Pythonic C-style structs for parsing binary data',
