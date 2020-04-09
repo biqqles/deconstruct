@@ -64,16 +64,16 @@ Alternatively you can install straight from this repository:
 pip install https://github.com/biqqles/deconstruct/archive/master.zip
 ```
 
-Built wheels are also available under [Releases](https://github.com/biqqles/deconstruct/releases), as is a changelog.
+Built wheels are also available under [Releases](https://github.com/biqqles/deconstruct/releases), as is a changelog. The latest release is version 0.5.
 
-deconstruct has no dependencies but requires Python >= 3.6 as it makes use of the class annotations added in that release (see [PEP 526](https://www.python.org/dev/peps/pep-0526/)).
+deconstruct has no dependencies but requires Python >= 3.6 as it makes use of the class annotation syntax added in that release (see [PEP 526](https://www.python.org/dev/peps/pep-0526/)).
 
 ## API listing
 
 ### Struct(buffer: bytes)
-Subclass this to define your own structs. Subclasses should only contain field definitions of C types defined in this package (more on this [below](#c-types)).
+Subclass this to define your own structs. Subclasses should only declare fields of C types defined in this package.
 
-When you instantiate your Struct with a `bytes` object, deconstruct creates a format string and uses it to unpack that buffer. In the instance, deconstruct types will be replaced with their equivalent Python types for use (e.g. `bytes` for `char`, `int` for `schar` and `float` for `double`).
+When you instantiate your Struct with a [bytes-like object](https://docs.python.org/3/glossary.html#term-bytes-like-object), deconstruct creates a format string and uses it to unpack that buffer. In the instance, C types will be replaced with their equivalent Python types for use (e.g. `bytes` for `char`, `int` for `schar` and `float` for `double`). All types available for use in struct field definitions and their details are documented in the table [below](#c-types).
 
 #### Attributes
 |Name            |Type       |Description   |
@@ -86,53 +86,54 @@ Note that `TypeWidth.NATIVE` can only be used with `ByteOrder.NATIVE`. This is a
 #### Properties
 |Name            |Type       |Description   |
 |----------------|-----------|--------------|
-|`format_string` |`str`      |The struct.py-compatible format string for this struct |
-|`sizeof`        |`int`      |The total size in bytes of the struct. Equivalent to C's `sizeof` |
+|`format_string` |`str`      |The struct.py-compatible format string for this struct|
+|`sizeof`        |`int`      |The total size in bytes of the struct. Equivalent to C's `sizeof`|
 
 #### Methods
 |Signature       |Return type|Description   |
 |----------------|-----------|--------------|
-|`to_bytes()`    |`bytes`    |Returns the in-memory (packed) representation of this struct instance|
+|`to_bytes()`    |`bytes`    |Returns the in-memory ("packed") representation of this struct instance|
 
-You can also `print` Struct instances for easier debugging.
+You can also `print` Struct instances for easier debugging and compare them using the `==` operator.
 
 ### C types
-deconstruct defines the following special types for use in Struct field definitions:<sup>[2](#f_ty)</sup>
+deconstruct defines the following special types for use in Struct definitions:<sup>[2](#f_ty)</sup>
 
-|deconstruct type|C99 type            |Python format character|"Standard" width (bytes)<sup>[1](#f_st)</sup>|
-|----------------|--------------------|-----------------------|------------------------|
-|`char`          |`char`              |`c`                    |1                       |
-|`schar`         |`signed char`       |`b`                    |1                       |
-|`uchar`         |`unsigned char`     |`B`                    |1                       |
-|`short`         |`short`             |`h`                    |2                       |
-|`ushort`        |`unsigned short`    |`H`                    |2                       |
-|`int`           |`int`               |`i`                    |2                       |
-|`uint`          |`unsigned int`      |`I`                    |2                       |
-|`long`          |`long`              |`l`                    |4                       |
-|`ulong`         |`unsigned long`     |`L`                    |4                       |
-|`longlong`      |`long long`         |`q`                    |8                       |
-|`ulonglong`     |`unsigned long long`|`Q`                    |8                       |
-|`bool`          |`bool` (`_Bool`)    |`?`                    |1                       |
-|`float`         |`float`             |`f`                    |4                       |
-|`double`        |`double`            |`d`                    |8                       |
-|`int8`          |`int8_t`            |`b`*                   |1                       |
-|`uint8`         |`uint8_t`           |`B`*                   |1                       |
-|`int16`         |`int16_t`           |`h`*                   |2                       |
-|`uint16`        |`uint16_t`          |`H`*                   |2                       |
-|`int32`         |`int32_t`           |`l`*                   |4                       |
-|`uint32`        |`uint32_t`          |`L`*                   |4                       |
-|`int64`         |`int64_t`           |`q`*                   |8                       |
-|`uint64`        |`uint64_t`          |`Q`*                   |8                       |
-|`ptr`           |`void*`/`intptr_t`/`uintptr_t`|`P`          |N/A**                   |
-|`size`          |`size_t`            |`n`                    |N/A**                   |
-|`ssize`         |`ssize_t`           |`N`                    |N/A**                   |
+|deconstruct type|C99 type            |Python format character|"Standard" width (bytes)<sup>[1](#f_st)</sup>|Resolves to Python type|
+|----------------|--------------------|-----------------------|------------------------|--------------------------------------------|
+|`char`          |`char`              |`c`                    |1                       |`bytes` of length 1                         |
+|`schar`         |`signed char`       |`b`                    |1                       |`int`                                       |
+|`uchar`         |`unsigned char`     |`B`                    |1                       |`int`                                       |
+|`short`         |`short`             |`h`                    |2                       |`int`                                       |
+|`ushort`        |`unsigned short`    |`H`                    |2                       |`int`                                       |
+|`int`           |`int`               |`i`                    |2                       |`int`                                       |
+|`uint`          |`unsigned int`      |`I`                    |2                       |`int`                                       |
+|`long`          |`long`              |`l`                    |4                       |`int`                                       |
+|`ulong`         |`unsigned long`     |`L`                    |4                       |`int`                                       |
+|`longlong`      |`long long`         |`q`                    |8                       |`int`                                       |
+|`ulonglong`     |`unsigned long long`|`Q`                    |8                       |`int`                                       |
+|`bool`          |`bool` (`_Bool`)    |`?`                    |1                       |`bool`                                      |
+|`float`         |`float`             |`f`                    |4                       |`float`                                     |
+|`double`        |`double`            |`d`                    |8                       |`float`                                     |
+|`int8`          |`int8_t`            |`b`*                   |1                       |`int`                                       |
+|`uint8`         |`uint8_t`           |`B`*                   |1                       |`int`                                       |
+|`int16`         |`int16_t`           |`h`*                   |2                       |`int`                                       |
+|`uint16`        |`uint16_t`          |`H`*                   |2                       |`int`                                       |
+|`int32`         |`int32_t`           |`l`*                   |4                       |`int`                                       |
+|`uint32`        |`uint32_t`          |`L`*                   |4                       |`int`                                       |
+|`int64`         |`int64_t`           |`q`*                   |8                       |`int`                                       |
+|`uint64`        |`uint64_t`          |`Q`*                   |8                       |`int`                                       |
+|`ptr`           |`void*`/`intptr_t`/`uintptr_t`|`P`          |N/A**                   |`int`                                       |
+|`size`          |`size_t`            |`n`                    |N/A**                   |`int`                                       |
+|`ssize`         |`ssize_t`           |`N`                    |N/A**                   |`int`                                       |
 
 <sup>
-* format character with `__type_width__ = TypeWidth.STANDARD` - platform specific otherwise.<br>
-** only available with `__type_width__ = TypeWidth.NATIVE`.
+* format character with <code>__type_width__ = TypeWidth.STANDARD</code> - platform specific otherwise.<br>
+** only available with <code>__type_width__ = TypeWidth.NATIVE</code>.
 </sup>
 
-As mentioned earlier, these types support a `type[length]` syntax to define fixed-size, n-dimensional arrays. When a Struct is used to unpack a buffer, these types will resolve to a Python tuple of their equivalent types. You can also use this to define padding sequences.
+### Arrays
+As mentioned earlier, all the types above support a `type[length]` syntax to define arrays. Multidimensional arrays work as you would expect, with `int[2][2]` declaring a 2-D array of type `int` and total length 4. When a Struct is used to unpack a buffer, each array will resolve to a tuple (or in the case of a multidimensional array, a nested tuple) of their equivalent Python types, as documented in the table above. The only exception to this is `char`, an array of which will be automatically concatenated to a single `bytes` object (if this behaviour is undesirable, use `schar` or `uchar` instead).
 
 ---
 
