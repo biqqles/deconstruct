@@ -65,6 +65,15 @@ class Tests(unittest.TestCase):
 
         self.assertEqual(ThreeShort.format_string, '=1h2h')
 
+    def test_pointer_notation(self):
+        """Test ptr's destination notation."""
+        simple = c.ptr > c.double
+        array_of_ptr = c.ptr[2] > c.int
+        ptr_to_array = c.ptr > c.int[2]
+
+        # check all returned types are still pointers
+        self.assertTrue(simple.type_code == array_of_ptr.type_code == ptr_to_array.type_code == c.ptr.type_code)
+
     def test_empty_struct(self):
         """Tests acceptability of structs with no annotations."""
         class Empty(c.Struct):

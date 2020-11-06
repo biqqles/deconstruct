@@ -8,9 +8,8 @@
  This module contains the meta-programmatic magic that implements this
  package's special behaviour.
 """
-import sys
 from typing import Type, List
-
+from sys import modules
 
 class classproperty:
     """A class property decorator, similar to the builtin @classmethod."""
@@ -31,7 +30,7 @@ class ArrayLengthSpecifiable(type):
         if length < 0:
             raise TypeError('Size of array cannot be negative')
         # create a new copy of cls with altered dimensions schema
-        return type(cls.__name__, cls.__bases__, dict(cls.__dict__, dimensions=[*cls.dimensions, length]))
+        return type(cls)(cls.__name__, cls.__bases__, dict(cls.__dict__, dimensions=[*cls.dimensions, length]))
 
 
 class OnlyCTypeFieldsPermitted(type):
@@ -42,9 +41,17 @@ class OnlyCTypeFieldsPermitted(type):
             annotations = dict_.setdefault('__annotations__', {})  # ensure class has annotations
             for field_name, field_type in annotations.items():
                 if type(field_type) is str:  # evaluate string annotations
-                    module_vars = vars(sys.modules[dict_['__module__']])
+                    module_vars = vars(modules[dict_['__module__']])
                     field_type = eval(field_type, dict(dict_, **module_vars))
                     annotations[field_name] = field_type
                 if not issubclass(field_type, CType):
                     raise TypeError('Only types defined in this package can be used in Structs')
         return super().__new__(mcs, name, bases, dict_)
+
+
+class DestinationSpecifiable(ArrayLengthSpecifiable):
+    """A mixin that allows a convenient notation for the type a pointer points to."""
+    __getitem__ = ArrayLengthSpecifiable.__getitem__
+
+    def __gt__(self, other):
+        return self

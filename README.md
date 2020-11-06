@@ -135,6 +135,13 @@ deconstruct defines the following special types for use in Struct definitions:<s
 ### Arrays
 As mentioned earlier, all the types above support a `type[length]` syntax to define arrays. Multidimensional arrays work as you would expect, with `int[2][2]` declaring a 2-D array of type `int` and total length 4. When a Struct is used to unpack a buffer, each array will resolve to a tuple (or in the case of a multidimensional array, a nested tuple) of their equivalent Python types, as documented in the table above. The only exception to this is `char`, an array of which will be automatically concatenated to a single `bytes` object (if this behaviour is undesirable, use `schar` or `uchar` instead).
 
+### Pointers
+`ptr` uniquely supports an optional notation format using the `>` operator, allowing you to denote the type it points to. This notation is purely for programmer convenience - it, for example, has no effect on the size of the struct as all pointers are assumed to be of the size of `void*` (which is guaranteed to be able to hold any pointer).
+
+To illustrate this syntax, `f: c.ptr > c.double` denotes a pointer to double (`double* f;`). Arrays of pointers *and* pointers to arrays are supported. For example, `c.ptr[2] > c.int` indicates an array of `int*`, while `c.ptr > c.int[2]` indicates a pointer to an `int` array.
+
+You can also use `Struct` subtypes as the pointed-to type.
+
 ---
 
 <b id="f_st">1.</b> Python's struct has the concept of "standard" type sizes. This is somewhat confusing coming from C as its standards go to some length not to define a standard ABI. However, as this terminology is so fundamental to the documentation of Python's struct it is replicated here for simplicity's sake. These sizes correspond with the *minimum* sizes [implied](https://en.wikipedia.org/wiki/C_data_types#Basic_types) for C's types.	

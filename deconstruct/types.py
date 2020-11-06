@@ -8,11 +8,12 @@
  This module defines Python types representing C data types, for use
  in Structs.
 """
+from typing import Any, List
 import ctypes
 from functools import reduce
 from operator import mul
-from typing import Any, List
-from .meta import ArrayLengthSpecifiable, classproperty
+
+from .meta import ArrayLengthSpecifiable, DestinationSpecifiable, classproperty
 from .struct import TypeWidth
 
 
@@ -109,7 +110,7 @@ class ssize(int, CType): type_code = 'n'; native_only = True
 
 class size(int, CType): type_code = 'N'; native_only = True
 
-class ptr(int, CType): type_code = 'P'; native_only = True
+class ptr(int, CType, metaclass=DestinationSpecifiable): type_code = 'P'; native_only = True
 
 # types that shadow built-ins below here
 
