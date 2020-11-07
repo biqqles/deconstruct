@@ -33,6 +33,18 @@ class Tests(unittest.TestCase):
         with self.assertRaises(TypeError):
             Bad(b'\0' * Bad.sizeof)
 
+    def test_require(self):
+        """Tests correct handling of the _require() method."""
+        class Requirement(c.Struct):
+            operand: c.uchar
+
+            def _require(self) -> bool:
+                return self.operand == 4
+
+        Requirement(b'\4')
+        with self.assertRaises(ValueError):
+            Requirement(b'\0')
+
     def test_field_type_restriction(self):
         """Detects detection and rejection of non-deconstruct types in structs."""
         with self.assertRaises(TypeError):
@@ -66,7 +78,7 @@ class Tests(unittest.TestCase):
         self.assertEqual(ThreeShort.format_string, '=1h2h')
 
     def test_pointer_notation(self):
-        """Test ptr's destination notation."""
+        """Tests ptr's destination notation."""
         simple = c.ptr > c.double
         array_of_ptr = c.ptr[2] > c.int
         ptr_to_array = c.ptr > c.int[2]

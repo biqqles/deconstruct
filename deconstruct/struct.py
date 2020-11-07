@@ -51,6 +51,10 @@ class Struct(metaclass=OnlyCTypeFieldsPermitted):
                 field_value = next(unpacked)
             setattr(self, field_name, field_type.value_of(field_value))
 
+        # finally, validate
+        if not self._require():
+            raise ValueError(f'require() condition unmet:\n{self!r}')
+
     def __repr__(self) -> str:
         """Return a textual representation of this struct instance."""
         return f'struct {type(self).__name__} [{self.__byte_order__}, {self.__type_width__}] {{\n' + \
@@ -62,8 +66,13 @@ class Struct(metaclass=OnlyCTypeFieldsPermitted):
         and the same values for those fields."""
         return isinstance(other, self.__class__) and vars(self) == vars(other)
 
+    def _require(self) -> bool:
+        """Override this method to specify your own instance validation logic. This method is called each time the
+        struct is initialised; a `ValueError` will be raised if it returns false. Inspired by Kotlin's `require`."""
+        return True
+
     def to_bytes(self) -> bytes:
-        """Return the in-memory (packed) representation of this struct instance."""
+        """Return the in-memory ("packed") representation of this struct instance."""
         flatten = lambda nested: (element for n in nested for element in (flatten(n) if type(n) is tuple else [n]))
         return struct.pack(self.format_string, *flatten(getattr(self, s) for s in self.__annotations__))
 

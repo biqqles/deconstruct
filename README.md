@@ -89,10 +89,11 @@ Note that `TypeWidth.NATIVE` can only be used with `ByteOrder.NATIVE`. This is a
 |`format_string` |`str`      |The struct.py-compatible format string for this struct|
 |`sizeof`        |`int`      |The total size in bytes of the struct. Equivalent to C's `sizeof`|
 
-#### Methods
+#### Instance methods
 |Signature       |Return type|Description   |
 |----------------|-----------|--------------|
 |`to_bytes()`    |`bytes`    |Returns the in-memory ("packed") representation of this struct instance|
+|`_require()`    |`bool`     |Override this method to specify your own instance validation logic. This method is called each time the struct is initialised; a `ValueError` will be raised if it returns false.|
 
 You can also `print` Struct instances for easier debugging and compare them using the `==` operator.
 
