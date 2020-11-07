@@ -111,6 +111,15 @@ class Tests(unittest.TestCase):
         self.assertEqual(c.int[1][2][3].length, math.factorial(3))
         self.assertEqual(c.ptr[0][2][3].length, 0)
 
+    def test_new(self):
+        """Tests Struct.new."""
+        new = self.ThreeShort.new(32_767, (0, -32_768))
+        self.assertEqual(new.to_bytes(), b'\xff\x7f\x00\x00\x00\x80')
+
+        # test insufficient arguments
+        with self.assertRaises(AssertionError):
+            self.ThreeShort.new(2)
+
 
 if __name__ == '__main__':
     unittest.main()

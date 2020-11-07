@@ -83,7 +83,12 @@ When you instantiate your Struct with a [bytes-like object](https://docs.python.
 
 Note that `TypeWidth.NATIVE` can only be used with `ByteOrder.NATIVE`. This is a limitation of Python's struct.
 
-#### Properties
+#### Class methods
+|Signature       |Return type|Description   |
+|----------------|-----------|--------------|
+|`new(*args)`    |`Struct`   |Construct a new struct instance with field values specified as positional arguments, passed in order of definition. Note that arguments are not type checked.|
+
+#### Class properties
 |Name            |Type       |Description   |
 |----------------|-----------|--------------|
 |`format_string` |`str`      |The struct.py-compatible format string for this struct|

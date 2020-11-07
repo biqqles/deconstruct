@@ -76,6 +76,16 @@ class Struct(metaclass=OnlyCTypeFieldsPermitted):
         flatten = lambda nested: (element for n in nested for element in (flatten(n) if type(n) is tuple else [n]))
         return struct.pack(self.format_string, *flatten(getattr(self, s) for s in self.__annotations__))
 
+    @classmethod
+    def new(cls, *args) -> 'Struct':
+        """Construct a new struct instance with field values specified as positional arguments, passed in order of
+        definition. Note that arguments are not type checked."""
+        assert len(args) == len(cls.__annotations__), 'The number of arguments must exactly match the number of fields'
+        instance = cls.__new__(cls)
+        for f, v in zip(cls.__annotations__, args):
+            setattr(instance, f, v)
+        return instance
+
     @classproperty
     def format_string(cls) -> str:
         """A struct.py-compatible format string, calculated from this struct's definition.
