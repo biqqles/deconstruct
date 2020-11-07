@@ -13,17 +13,40 @@ import unittest
 import deconstruct as c
 
 class Tests(unittest.TestCase):
-    def test_type_reuse(self):
-        """Demonstrates multiple uses of a types and using types with different lengths."""
+    @classmethod
+    def setUpClass(cls) -> None:
         class ThreeShort(c.Struct):
             one: c.int16
             two: c.int16[2]
+        cls.ThreeShort = ThreeShort
 
-        self.assertEqual(ThreeShort.sizeof, 6)
-        self.assertEqual(ThreeShort.format_string, '=1h2h')
+    def test_type_reuse(self):
+        """Demonstrates multiple uses of a types and using types with different lengths."""
+        self.assertEqual(self.ThreeShort.sizeof, 6)
+        self.assertEqual(self.ThreeShort.format_string, '=1h2h')
 
-        self.assertEqual(ThreeShort.__annotations__['one'].length, 1)
-        self.assertEqual(ThreeShort.__annotations__['two'].length, 2)
+        self.assertEqual(self.ThreeShort.__annotations__['one'].length, 1)
+        self.assertEqual(self.ThreeShort.__annotations__['two'].length, 2)
+
+    def test_array_types(self):
+        """Demonstrates n-dimensional type morphing and calculations."""
+        self.assertEqual(c.int[1][2][3].dimensions, [1, 2, 3])
+        self.assertEqual(c.int[1][2][3].length, math.factorial(3))
+        self.assertEqual(c.ptr[0][2][3].length, 0)
+
+    def test_pointer_notation(self):
+        """Tests ptr's destination notation."""
+        simple = c.ptr > c.double
+        array_of_ptr = c.ptr[2] > c.int
+        ptr_to_array = c.ptr > c.int[2]
+
+        # check all returned types are still pointers
+        self.assertTrue(simple.type_code == array_of_ptr.type_code == ptr_to_array.type_code == c.ptr.type_code)
+
+    def test_array_length_check(self):
+        """Detects detection and rejection of invalid array sizes."""
+        with self.assertRaises(TypeError):
+            bad = c.int[-1]
 
     def test_native_only_check(self):
         """Detects detection and rejection of native-only types in non-native structs."""
@@ -51,14 +74,6 @@ class Tests(unittest.TestCase):
             class Bad(c.Struct):
                 test: str
 
-    def test_array_length_check(self):
-        """Detects detection and rejection of invalid array sizes."""
-        with self.assertRaises(TypeError):
-            bad = c.int[-1]
-
-    def test_format_string(self):
-        self.assertTrue(True)
-
     def test_inversion(self):
         """Tests struct inversion (conversion from and to bytes)."""
         class ComplexStruct(c.Struct):
@@ -77,15 +92,6 @@ class Tests(unittest.TestCase):
 
         self.assertEqual(ThreeShort.format_string, '=1h2h')
 
-    def test_pointer_notation(self):
-        """Tests ptr's destination notation."""
-        simple = c.ptr > c.double
-        array_of_ptr = c.ptr[2] > c.int
-        ptr_to_array = c.ptr > c.int[2]
-
-        # check all returned types are still pointers
-        self.assertTrue(simple.type_code == array_of_ptr.type_code == ptr_to_array.type_code == c.ptr.type_code)
-
     def test_empty_struct(self):
         """Tests acceptability of structs with no annotations."""
         class Empty(c.Struct):
@@ -93,23 +99,13 @@ class Tests(unittest.TestCase):
 
         Empty(Empty.sizeof * b'0')
 
-    def test_struct_comparision(self):
+    def test_struct_comparison(self):
         """Tests struct comparison."""
-        class ThreeShort(c.Struct):
-            one: c.int16
-            two: c.int16[2]
-
-        a = ThreeShort(0xdec0de.to_bytes(6, 'big'))
-        b = ThreeShort(0xdec0de.to_bytes(6, 'little'))
+        a = self.ThreeShort(0xdec0de.to_bytes(6, 'big'))
+        b = self.ThreeShort(0xdec0de.to_bytes(6, 'little'))
 
         self.assertEqual(a, copy.deepcopy(a))
         self.assertNotEqual(a, b)
-
-    def test_array_types(self):
-        """Demonstrates n-dimensional type morphing and calculations."""
-        self.assertEqual(c.int[1][2][3].dimensions, [1, 2, 3])
-        self.assertEqual(c.int[1][2][3].length, math.factorial(3))
-        self.assertEqual(c.ptr[0][2][3].length, 0)
 
     def test_new(self):
         """Tests Struct.new."""
