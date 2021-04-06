@@ -64,7 +64,7 @@ Alternatively you can install straight from this repository:
 pip install https://github.com/biqqles/deconstruct/archive/master.zip
 ```
 
-Built wheels are also available under [Releases](https://github.com/biqqles/deconstruct/releases), as is a changelog. The latest release is version 0.5.
+Built wheels are also available under [Releases](https://github.com/biqqles/deconstruct/releases), as is a changelog. The latest release is version 0.6.
 
 deconstruct has no dependencies but requires Python >= 3.6 as it makes use of the class annotation syntax added in that release (see [PEP 526](https://www.python.org/dev/peps/pep-0526/)).
 
@@ -152,4 +152,4 @@ You can also use `Struct` subtypes as the pointed-to type.
 
 <b id="f_st">1.</b> Python's struct has the concept of "standard" type sizes. This is somewhat confusing coming from C as its standards go to some length not to define a standard ABI. However, as this terminology is so fundamental to the documentation of Python's struct it is replicated here for simplicity's sake. These sizes correspond with the *minimum* sizes [implied](https://en.wikipedia.org/wiki/C_data_types#Basic_types) for C's types.	
 
-<b id="f_ty">2.</b> Because some of these conflict with Python's primitives, it is not recommended to `import * from deconstruct` as this will severely pollute your namespace (in fact this is a bad idea in general). I like to `import deconstruct as c` as shown above.
+<b id="f_ty">2.</b> Because some of these conflict with Python's primitives, it is not recommended to `from deconstruct import *` as this will severely pollute your namespace (in fact this is a bad idea in general). I like to `import deconstruct as c` as shown above.
