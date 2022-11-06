@@ -7,6 +7,7 @@
 """
 import struct
 from enum import Enum
+from functools import lru_cache
 from itertools import islice
 from .meta import OnlyCTypeFieldsPermitted, classproperty
 
@@ -87,6 +88,7 @@ class Struct(metaclass=OnlyCTypeFieldsPermitted):
         return instance
 
     @classproperty
+    @lru_cache(maxsize=None)
     def format_string(cls) -> str:
         """A struct.py-compatible format string, calculated from this struct's definition.
         This works because, according to the source for dataclasses.py in the standard library, __annotations__ "is
